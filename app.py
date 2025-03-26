@@ -8,7 +8,7 @@ from typing import List, Optional
 from supabase import create_client, Client
 
 import streamlit as st
-
+import base64
 # CSS để đặt ảnh nền
 def set_background(image_url):
     bg_css = f"""
