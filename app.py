@@ -7,6 +7,26 @@ import os
 from typing import List, Optional
 from supabase import create_client, Client
 
+import streamlit as st
+
+# CSS để đặt ảnh nền
+def set_background(image_url):
+    bg_css = f"""
+    <style>
+    .stApp {{
+        background-image: url("{image_url}");
+        background-size: 100% 100%;
+        background-position: center;
+        background-repeat: no-repeat;
+    }}
+    </style>
+    """
+    st.markdown(bg_css, unsafe_allow_html=True)
+
+# Nếu ảnh là file cục bộ, lưu trên GitHub rồi dùng raw URL
+image_url = "https://github.com/dangdung287/locemail/blob/main/logo.jpeg"
+set_background(image_url)
+
 # Hardcoded credentials for local development (REMOVE IN PRODUCTION!)
 SUPABASE_URL = "https://ltnmxrecdwvuhdtwegsm.supabase.co"
 SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx0bm14cmVjZHd2dWhkdHdlZ3NtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI3ODgzODQsImV4cCI6MjA1ODM2NDM4NH0.VUwvYcdtE3O9Pjoyza1842flkDPNZhUokR7qwk-zjeY"
