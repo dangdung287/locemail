@@ -179,7 +179,7 @@ def register_page():
 
 def main_page():
     """Giao diện chính sau khi đăng nhập."""
-    st.title("📧 Hệ thống lọc Email GLOBAL LOGISTICS")
+    st.title("📧 GLOBAL LOGISTICS & TRADING CO., LTD")
     
     email = st.text_input("Nhập địa chỉ email:", key="main_email")
     if st.button("Thêm Email", key="add_email_button"):
