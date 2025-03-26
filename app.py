@@ -24,7 +24,7 @@ def set_background(image_url):
     st.markdown(bg_css, unsafe_allow_html=True)
 
 # Nếu ảnh là file cục bộ, lưu trên GitHub rồi dùng raw URL
-image_url = "https://github.com/dangdung287/locemail/blob/main/logo.jpeg"
+image_url = "https://raw.githubusercontent.com/dangdung287/locemail/main/logo.jpeg"
 set_background(image_url)
 
 # Hardcoded credentials for local development (REMOVE IN PRODUCTION!)
