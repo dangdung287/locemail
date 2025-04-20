@@ -142,19 +142,6 @@ def add_emails_to_database(emails_input):
     conn.close()
     st.success(f"Đã thêm {count} email thành công!")
 
-# 🚀 Giao diện chính
-st.title("Ứng dụng Thêm Email Hàng Loạt")
-
-emails_input = st.text_area("Dán danh sách email ở đây (ngăn cách bởi , ; Enter...)")
-
-if st.button("Thêm Email"):
-    if emails_input.strip():
-        add_emails_to_database(emails_input)
-    else:
-        st.warning("Vui lòng nhập ít nhất 1 email.")
-
-
-
 def filter_emails(uploaded_file):
     """Lọc email trùng lặp."""
     if uploaded_file is not None:
@@ -233,12 +220,13 @@ def main_page():
     """Giao diện chính sau khi đăng nhập."""
     st.title("📧 GLOBAL LOGISTICS & TRADING CO., LTD")
     
-    email = st.text_input("Nhập địa chỉ email:", key="main_email")
-    if st.button("Thêm Email", key="add_email_button"):
-        if email:
-            add_emails_to_database([email])
+    emails_input = st.text_area("Dán danh sách email ở đây (ngăn cách bởi , ; Enter...)")
+
+    if st.button("Thêm Email"):
+        if emails_input.strip():
+            add_emails_to_database(emails_input)
         else:
-            st.warning("Vui lòng nhập email!")
+            st.warning("Vui lòng nhập ít nhất 1 email.")
     
     uploaded_file = st.file_uploader("Tải file Excel", type=["xlsx"], key="excel_uploader")
     if uploaded_file:
