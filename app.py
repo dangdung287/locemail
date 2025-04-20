@@ -99,12 +99,14 @@ def authenticate(username, password):
         st.error(f"Lỗi xác thực: {e}")
         return None
 
-def add_emails_to_database(emails):
-    """Thêm email vào cơ sở dữ liệu."""
+import re
+
+def add_emails_to_database(emails_input):
+    """Thêm nhiều email vào cơ sở dữ liệu từ chuỗi nhập vào."""
     conn = get_db_connection()
     if not conn:
         return
-    
+
     cursor = conn.cursor()
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS emails (
@@ -112,16 +114,30 @@ def add_emails_to_database(emails):
             added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """)
+
+    # Tách chuỗi thành danh sách email
+    raw_emails = re.split(r'[,\n;\s]+', emails_input)
     
-    # Lọc email hợp lệ
-    valid_emails = [email for email in emails if '@' in email]
-    
+    # Lọc email hợp lệ và loại trùng
+    valid_emails = []
+    seen = set()
+    for email in raw_emails:
+        email = email.strip()
+        if email and '@' in email and email not in seen:
+            valid_emails.append(email)
+            seen.add(email)
+
+    # Thêm vào cơ sở dữ liệu
     for email in valid_emails:
-        cursor.execute("INSERT INTO emails (email) VALUES (%s) ON CONFLICT (email) DO NOTHING", (email,))
-    
+        cursor.execute(
+            "INSERT INTO emails (email) VALUES (%s) ON CONFLICT (email) DO NOTHING",
+            (email,)
+        )
+
     conn.commit()
     conn.close()
-    st.success(f"Thêm {len(valid_emails)} email thành công!")
+    st.success(f"Đã thêm {len(valid_emails)} email hợp lệ vào cơ sở dữ liệu.")
+
 
 def filter_emails(uploaded_file):
     """Lọc email trùng lặp."""
