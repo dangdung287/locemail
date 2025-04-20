@@ -6,7 +6,7 @@ import io
 import os
 from typing import List, Optional
 from supabase import create_client, Client
-
+import re
 import streamlit as st
 import base64
 # CSS để đặt ảnh nền
@@ -99,12 +99,11 @@ def authenticate(username, password):
         st.error(f"Lỗi xác thực: {e}")
         return None
 
-import re
-
 def add_emails_to_database(emails_input):
     """Thêm nhiều email vào cơ sở dữ liệu từ chuỗi nhập vào."""
     conn = get_db_connection()
     if not conn:
+        st.error("Không kết nối được cơ sở dữ liệu.")
         return
 
     cursor = conn.cursor()
@@ -115,10 +114,10 @@ def add_emails_to_database(emails_input):
         )
     """)
 
-    # Tách chuỗi thành danh sách email
+    # Tách email từ chuỗi nhập vào (cắt theo , ; xuống dòng, khoảng trắng)
     raw_emails = re.split(r'[,\n;\s]+', emails_input)
     
-    # Lọc email hợp lệ và loại trùng
+    # Lọc email hợp lệ và loại bỏ trùng
     valid_emails = []
     seen = set()
     for email in raw_emails:
@@ -128,15 +127,32 @@ def add_emails_to_database(emails_input):
             seen.add(email)
 
     # Thêm vào cơ sở dữ liệu
+    count = 0
     for email in valid_emails:
-        cursor.execute(
-            "INSERT INTO emails (email) VALUES (%s) ON CONFLICT (email) DO NOTHING",
-            (email,)
-        )
+        try:
+            cursor.execute(
+                "INSERT INTO emails (email) VALUES (%s) ON CONFLICT (email) DO NOTHING",
+                (email,)
+            )
+            count += 1
+        except Exception as e:
+            st.warning(f"Lỗi khi thêm email {email}: {e}")
 
     conn.commit()
     conn.close()
-    st.success(f"Đã thêm {len(valid_emails)} email hợp lệ vào cơ sở dữ liệu.")
+    st.success(f"Đã thêm {count} email thành công!")
+
+# 🚀 Giao diện chính
+st.title("Ứng dụng Thêm Email Hàng Loạt")
+
+emails_input = st.text_area("Dán danh sách email ở đây (ngăn cách bởi , ; Enter...)")
+
+if st.button("Thêm Email"):
+    if emails_input.strip():
+        add_emails_to_database(emails_input)
+    else:
+        st.warning("Vui lòng nhập ít nhất 1 email.")
+
 
 
 def filter_emails(uploaded_file):
